@@ -10,7 +10,7 @@ mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
-hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
+hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.6)
 
 data_paths = ['./data/test_alphabet', './data/train_alphabet']
 
@@ -19,10 +19,11 @@ labels = []
 for data_path in data_paths:
     for dir in os.listdir(data_path):
         for img_path in os.listdir(os.path.join(data_path, dir)):
-            data_aux = [0] * 42  # Initialize with zeros
+            data_aux = [0] * 63  # Initialize with zeros
 
             x_ = []
             y_ = []
+            z_ = []
 
             img = cv2.imread(os.path.join(data_path, dir, img_path))
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -34,17 +35,21 @@ for data_path in data_paths:
                     for i in range(len(hand_landmarks.landmark)):
                         x = hand_landmarks.landmark[i].x
                         y = hand_landmarks.landmark[i].y
+                        z = hand_landmarks.landmark[i].z
 
                         x_.append(x)
                         y_.append(y)
+                        z_.append(y)
 
                     for i in range(min(len(hand_landmarks.landmark), 21)):
                         x = hand_landmarks.landmark[i].x
                         y = hand_landmarks.landmark[i].y
+                        z = hand_landmarks.landmark[i].z
 
                         eps = 1e-7  # division by 0 protection
                         data_aux[i*2] = (x - min(x_))/(max(x_) - min(x_) + eps)
                         data_aux[i*2 + 1] = (y - min(y_))/(max(y_) - min(y_) + eps)
+                        data_aux[i*3 + 2] = 2 * (z - min(z_)) / (max(z_) - min(z_) + eps) - 1
 
             data.append(data_aux)
             labels.append(dir)
@@ -60,4 +65,4 @@ for label in df['label'].unique():
     if label != 'Blank':
         df.loc[df['label'] == label] = df.loc[df['label'] == label].replace(0, mean_values.loc[label])
 
-df.to_csv('asl-data.csv', index=False)
+df.to_csv('./data/asl-data-xyz.csv', index=False)
