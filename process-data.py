@@ -60,12 +60,12 @@ for data_path in data_paths:
 
             labels.append(dir)
 
-            # original_features = process_image(img_rgb)
-            # original_data.append(original_features)
+            original_features = process_image(img_rgb)
+            original_data.append(original_features)
 
-            augmented_img_rgb = augment_image(img_rgb)
-            augmented_features = process_image(augmented_img_rgb)
-            augmented_data.append(augmented_features)
+            # augmented_img_rgb = augment_image(img_rgb)
+            # augmented_features = process_image(augmented_img_rgb)
+            # augmented_data.append(augmented_features)
 
 # original_df = pd.DataFrame(original_data)
 # original_df['label'] = labels
@@ -75,9 +75,12 @@ augmented_df['label'] = labels
 
 mask = (augmented_df.loc[:, augmented_df.columns != 'label'] == 0).all(axis=1)
 
+# original_df.loc[mask, 'label'] = 'Blank'
+augmented_df.loc[mask, 'label'] = 'Blank'
+
 # original_df.loc[original_df['label'] == 'Blank', original_df.columns != 'label'] = 0.0
 augmented_df.loc[augmented_df['label'] == 'Blank', augmented_df.columns != 'label'] = 0.0
 
 # Save the DataFrames to CSV
 # original_df.to_csv('./data/asl-datav4.csv', index=False)
-augmented_df.to_csv('./data/asl-datav4-augmented.csv', index=False)
+augmented_df.to_csv('./data/asl-datav4-augmented2.csv', index=False)
