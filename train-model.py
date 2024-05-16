@@ -35,7 +35,7 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=10)
 
 history = model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=100, callbacks=[early_stopping])
 
-model.save('./model/asl_classifierv2.h5')
+model.save('./model/asl_classifierv3.h5')
 
 # Plot training & validation accuracy values
 plt.figure(figsize=(12, 4))
@@ -57,4 +57,4 @@ plt.xlabel('Epoch')
 plt.legend(['Train', 'Validation'], loc='upper left')
 
 plt.tight_layout()
-plt.savefig('./model/training-plotv2.png')
+plt.savefig('./model/training-plotv3.png')
