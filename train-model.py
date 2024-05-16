@@ -7,22 +7,20 @@ from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
 
-# Load the data
-data = pd.read_csv('./data/asl-data-xyz.csv')
+data_original = pd.read_csv('./data/asl-datav3.csv')
+data_augmented = pd.read_csv('./data/asl-datav3-augmented.csv')
 
-# Prepare the features and target variable
+data = pd.concat([data_original, data_augmented], ignore_index=True)
+
 X = data.iloc[:, :-1].values
 y = data.iloc[:, -1].values
 
-# Encode the target variable
 encoder = LabelEncoder()
 y = encoder.fit_transform(y)
 y = to_categorical(y)
 
-# Split the data into training and validation sets
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=288478)
 
-# Define the model
 model = Sequential()
 model.add(Dense(128, activation='relu', input_shape=(X_train.shape[1],)))
 model.add(Dropout(0.2))
@@ -31,17 +29,13 @@ model.add(Dropout(0.2))
 model.add(Dense(32, activation='relu'))
 model.add(Dense(y_train.shape[1], activation='softmax')) 
 
-# Compile the model
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-# Define early stopping
 early_stopping = EarlyStopping(monitor='val_loss', patience=10)
 
-# Train the model
 history = model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=100, callbacks=[early_stopping])
 
-# Save the model
-model.save('./model/asl_classifier_xyz.h5')
+model.save('./model/asl_classifierv2.h5')
 
 # Plot training & validation accuracy values
 plt.figure(figsize=(12, 4))
@@ -63,4 +57,4 @@ plt.xlabel('Epoch')
 plt.legend(['Train', 'Validation'], loc='upper left')
 
 plt.tight_layout()
-plt.savefig('./model/training-plot.png')
+plt.savefig('./model/training-plotv2.png')
